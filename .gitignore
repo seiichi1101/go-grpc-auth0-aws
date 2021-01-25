@@ -3,6 +3,6 @@ blog_templates
 markdown.css
 BLOG.md
 MARP.md
-pics
+pics/*
 !pics/go-grpc-auth0.png
 .vscode

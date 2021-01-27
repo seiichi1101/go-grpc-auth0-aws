@@ -6,3 +6,9 @@ MARP.md
 pics/*
 !pics/go-grpc-auth0.png
 .vscode
+
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*

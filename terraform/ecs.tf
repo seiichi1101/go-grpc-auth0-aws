@@ -38,8 +38,7 @@ resource "aws_ecs_service" "go_grpc_server_ecs_service" {
   desired_count   = 1
 
   load_balancer {
-    # target_group_arn = aws_alb_target_group.go_grpc_server_target_gp.arn
-    target_group_arn = data.aws_lb_target_group.go_grpc_server_target_gp.arn
+    target_group_arn = aws_alb_target_group.go_grpc_server_target_gp.arn
     container_name   = "go_grpc_server"
     container_port   = 50051
   }

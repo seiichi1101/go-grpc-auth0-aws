@@ -1,11 +1,17 @@
 # Terraform Setting
 terraform {
   required_version = ">= 0.13"
+  required_providers {
+    aws = {
+      version = ">= 3.29.0"
+      source  = "hashicorp/aws"
+    }
+  }
 }
 
 # Provider
 provider "aws" {
-  region = var.region
+  region = var.region 
 }
 
 # Variables

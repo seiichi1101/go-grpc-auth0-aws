@@ -38,8 +38,7 @@ resource "aws_alb_listener_rule" "go_grpc_server" {
 
   action {
     type = "forward"
-    # target_group_arn = aws_alb_target_group.go_grpc_server_target_gp.arn
-    target_group_arn = data.aws_lb_target_group.go_grpc_server_target_gp.arn
+    target_group_arn = aws_alb_target_group.go_grpc_server_target_gp.arn
   }
 
   condition {
@@ -51,41 +50,32 @@ resource "aws_alb_listener_rule" "go_grpc_server" {
   }
 }
 
-# 2020.12時点では、Terraformがprotocol_versionに対応していない
-# https://github.com/hashicorp/terraform-provider-aws/issues/15929
-# 一時対応として手動作成したターゲットグループを取り込んで利用する方法を記載する
-data "aws_lb_target_group" "go_grpc_server_target_gp" {
-  # TODO: fill
-  arn = "<your-taget-group-arn>"
+resource "aws_alb_target_group" "go_grpc_server_target_gp" {
+  port                 = 50051
+  protocol             = "HTTP"
+  protocol_version     = "GRPC"
+
+  vpc_id      = aws_vpc.vpc.id
+  target_type = "ip"
+
+  health_check {
+    interval = 60
+    path     = "/helloworld.Greeter/SayHello"
+
+    protocol            = "HTTP"
+    timeout             = 20
+    unhealthy_threshold = 4
+    matcher             = "0-99"
+  }
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  depends_on = [aws_alb.alb]
+  tags = {
+    Name = replace("${var.system_name}_${var.aws_env}_go_grpc_server_target_gp", "_", "-")
+  }
 }
-
-# 2020.12時点では、Terraformがprotocol_versionに対応していないためコメントアウト
-# resource "aws_alb_target_group" "go_grpc_server_target_gp" {
-#   port             = 50051
-#   protocol         = "HTTPS"
-#   protocol_version = "gRPC"
-
-#   vpc_id      = aws_vpc.vpc.id
-#   target_type = "ip"
-
-#   health_check {
-#     interval = 60
-#     path     = "/helloworld.Greeter/SayHello"
-
-#     protocol            = "HTTP"
-#     timeout             = 20
-#     unhealthy_threshold = 4
-#     matcher             = "0-99"
-#   }
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-
-#   depends_on = [aws_alb.alb]
-#   tags = {
-#     Name = replace("${var.system_name}_${var.aws_env}_go_grpc_server_target_gp", "_", "-")
-#   }
-# }
 
 
 
